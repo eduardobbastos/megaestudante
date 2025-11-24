@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geografia - 6º Ano: Trabalho e Paisagens</title>
+    <style>
+        :root {
+            --primary: #27ae60; /* Verde Geografia/Natureza */
+            --secondary: #e67e22; /* Laranja Terra */
+            --success: #2ecc71;
+            --error: #e74c3c;
+            --bg: #fdfefe;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 950px;
+            margin: 0 auto;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), #2ecc71);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 { margin: 0; font-size: 2em; }
+        h3 { margin-top: 10px; font-weight: normal; opacity: 0.9; }
+
+        .progress-bar {
+            background-color: #bdc3c7;
+            border-radius: 10px;
+            height: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: var(--secondary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .module-title {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .question-card {
+            background: #f4f6f6;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .question-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #bdc3c7;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1em;
+            transition: all 0.2s;
+            color: #444;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #eafaf1;
+            border-color: var(--primary);
+        }
+
+        /* Estados de Resposta */
+        .option-btn.correct {
+            background-color: #d5f5e3 !important;
+            border-color: var(--success) !important;
+            color: #196f3d;
+            font-weight: bold;
+        }
+        .option-btn.wrong {
+            background-color: #fadbd8 !important;
+            border-color: var(--error) !important;
+            color: var(--error);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e8f8f5;
+            border-left: 5px solid var(--success);
+            border-radius: 5px;
+            color: #0b5345;
+            font-size: 0.95em;
+            animation: fadeIn 0.4s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-fixed {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+            font-size: 1.1em;
+            z-index: 1000;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🌍 Avaliação de Geografia 🚜</h1>
+    <h3>Trabalho, Paisagens e Agropecuária - 6º Ano</h3>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+    <p>Baseado no livro Trilhas (Páginas 340 a 353)</p>
+</header>
+
+<div id="quiz-container"></div>
+
+<div class="score-fixed" id="score-display">
+    Acertos: 0 / 60
+</div>
+
+<script>
+    const quizData = [
+        
+        // --- MÓDULO 1: Trabalho e Transformação das Paisagens ---
+        {
+            module: "1. Trabalho e Transformação das Paisagens",
+            question: "1. O que motiva o ser humano a transformar as paisagens através do trabalho?",
+            options: ["Apenas para deixar mais bonito", "Garantir sua subsistência e atender necessidades", "Destruir a natureza por diversão", "Criar apenas áreas de lazer"],
+            correct: 1,
+            explanation: "O trabalho humano visa garantir o sustento (alimento, moradia) e atender às necessidades da sociedade."
+        },
+        {
+            module: "1. Trabalho e Transformação das Paisagens",
+            question: "2. O espaço terrestre resultante das relações entre sociedade e natureza é chamado de:",
+            options: ["Espaço Sideral", "Espaço Geográfico", "Espaço Natural", "Espaço Vazio"],
+            correct: 1,
+            explanation: "Espaço geográfico é aquele que foi modificado e organizado pelo ser humano ao longo da história."
+        },
+        {
+            module: "1. Trabalho e Transformação das Paisagens",
+            question: "3. Uma floresta intocada é um exemplo de:",
+            options: ["Paisagem Cultural", "Paisagem Natural", "Paisagem Humanizada", "Espaço Urbano"],
+            correct: 1,
+            explanation: "Paisagens naturais predominam elementos da natureza sem interferência humana direta."
+        },
+        {
+            module: "1. Trabalho e Transformação das Paisagens",
+            question: "4. Prédios, ruas, pontes e plantações são exemplos de:",
+            options: ["Elementos Naturais", "Elementos Culturais (ou Humanizados)", "Elementos Invisíveis", "Elementos Geológicos"],
+            correct: 1,
+            explanation: "Tudo que foi construído ou modificado pelo homem é um elemento cultural."
+        },
+        {
+            module: "1. Trabalho e Transformação das Paisagens",
+            question: "5. Na imagem da Indonésia (pág. 340), o que substituiu a floresta nativa?",
+            options: ["Um shopping center", "Uma área de plantação (cultivo)", "Um deserto", "Um oceano"],
+            correct: 1,
+            explanation: "A imagem mostra terraços de cultivo agrícola onde antes havia vegetação original."
+        },
+        {
+            module: "1. Trabalho e Transformação das Paisagens",
+            question: "6. É possível encontrar hoje muitas paisagens totalmente naturais?",
+            options: ["Sim, a maioria do planeta é intocado.", "Não, é cada vez mais difícil encontrar lugares sem interferência humana.", "Sim, nas grandes cidades.", "Não, o homem já destruiu tudo."],
+            correct: 1,
+            explanation: "Devido ao avanço das sociedades, poucos lugares permanecem 100% inalterados."
+        },
+        {
+            module: "1. Trabalho e Transformação das Paisagens",
+            question: "7. A instalação de redes de energia elétrica e iluminação (como na foto de Campo Grande/MS) é um exemplo de:",
+            options: ["Ação da chuva", "Trabalho humano modificando a paisagem", "Crescimento natural de árvores", "Fenômeno vulcânico"],
+            correct: 1,
+            explanation: "Infraestrutura urbana é resultado direto do trabalho e tecnologia humana."
+        },
+        {
+            module: "1. Trabalho e Transformação das Paisagens",
+            question: "8. Para cultivar o solo de uma determinada área, o primeiro passo geralmente é:",
+            options: ["Construir prédios", "Remover a vegetação original", "Esperar chover", "Comprar animais"],
+            correct: 1,
+            explanation: "A transformação agrícola começa com a remoção da mata nativa para preparar o solo."
+        },
+        {
+            module: "1. Trabalho e Transformação das Paisagens",
+            question: "9. O conceito de 'Subsistência' refere-se a:",
+            options: ["Obter lucro máximo", "Produzir para exportar", "Obter o necessário para o sustento e sobrevivência", "Viajar para o exterior"],
+            correct: 2,
+            explanation: "Subsistência é a produção voltada para suprir as necessidades básicas de quem produz."
+        },
+        {
+            module: "1. Trabalho e Transformação das Paisagens",
+            question: "10. As paisagens são estáticas (paradas)?",
+            options: ["Sim, nunca mudam.", "Não, são transformadas constantemente pelo trabalho e pela natureza.", "Apenas as cidades mudam.", "Apenas as florestas mudam."],
+            correct: 1,
+            explanation: "O espaço geográfico está em constante transformação."
+        },
+
+        // --- MÓDULO 2: Recursos Naturais ---
+        {
+            module: "2. Recursos Naturais",
+            question: "11. O que são Recursos Naturais?",
+            options: ["Dinheiro encontrado na rua", "Elementos da natureza usados para atender necessidades humanas", "Plástico e vidro", "Produtos industrializados"],
+            correct: 1,
+            explanation: "Água, solo, minerais e vegetação são exemplos de recursos naturais."
+        },
+        {
+            module: "2. Recursos Naturais",
+            question: "12. Minerais extraídos de rochas são considerados recursos:",
+            options: ["Renováveis", "Não Renováveis", "Infinitos", "Artificiais"],
+            correct: 1,
+            explanation: "Eles levam milhões de anos para se formar e podem se esgotar se usados excessivamente."
+        },
+        {
+            module: "2. Recursos Naturais",
+            question: "13. A água e os gêneros agrícolas são exemplos de recursos:",
+            options: ["Não renováveis", "Renováveis", "Minerais", "Fósseis"],
+            correct: 1,
+            explanation: "São renovados pelos ciclos naturais (ciclo da água) ou pelo novo plantio."
+        },
+        {
+            module: "2. Recursos Naturais",
+            question: "14. Matéria-prima é:",
+            options: ["O produto final vendido na loja", "O principal material usado para fabricar um produto", "O lixo da indústria", "O transporte de carga"],
+            correct: 1,
+            explanation: "Ex: A madeira é a matéria-prima para fazer papel ou móveis."
+        },
+        {
+            module: "2. Recursos Naturais",
+            question: "15. Embora a água seja renovável, a água doce potável está ameaçada por:",
+            options: ["Excesso de chuva", "Poluição e desperdício", "Congelamento dos oceanos", "Falta de sol"],
+            correct: 1,
+            explanation: "A poluição e o uso intensivo diminuem a disponibilidade de água limpa para consumo."
+        },
+        {
+            module: "2. Recursos Naturais",
+            question: "16. Metais, vidro e papel podem ser renovados por processos artificiais. Esse processo chama-se:",
+            options: ["Mineração", "Reciclagem", "Queimada", "Desmatamento"],
+            correct: 1,
+            explanation: "A reciclagem permite reutilizar materiais que seriam descartados."
+        },
+        {
+            module: "2. Recursos Naturais",
+            question: "17. A distribuição de água doce no planeta é:",
+            options: ["Igual em todos os lugares", "Desigual (alguns lugares têm muito, outros têm pouco)", "Só existe água no mar", "A água doce acabou"],
+            correct: 1,
+            explanation: "Fatores climáticos e geográficos fazem com que a água seja mal distribuída."
+        },
+        {
+            module: "2. Recursos Naturais",
+            question: "18. O ciclo de formação de minerais e solo leva:",
+            options: ["Alguns dias", "Poucos anos", "Milhões de anos", "Algumas horas"],
+            correct: 2,
+            explanation: "Por demorar tanto (tempo geológico), são considerados não renováveis na escala de vida humana."
+        },
+        {
+            module: "2. Recursos Naturais",
+            question: "19. A foto do Paquistão (pág. 351) mostra pessoas coletando água de poço. Isso ilustra:",
+            options: ["Abundância de água encanada", "Dificuldade de obtenção de água potável em climas áridos", "Lazer em piscinas", "Irrigação moderna"],
+            correct: 1,
+            explanation: "A escassez de chuvas e falta de infraestrutura dificultam o acesso à água."
+        },
+        {
+            module: "2. Recursos Naturais",
+            question: "20. O intenso consumo de produtos pela população urbana leva à:",
+            options: ["Preservação total da natureza", "Intensa exploração dos recursos naturais", "Diminuição das fábricas", "Falta de emprego"],
+            correct: 1,
+            explanation: "Para produzir mais produtos, é necessário extrair mais recursos da natureza."
+        },
+
+        // --- MÓDULO 3: Agricultura e Pecuária (Conceitos) ---
+        {
+            module: "3. Agricultura e Pecuária (Conceitos)",
+            question: "21. A união das atividades de agricultura e pecuária é chamada de:",
+            options: ["Indústria", "Agropecuária", "Comércio", "Serviços"],
+            correct: 1,
+            explanation: "Agro (campo/plantio) + Pecuária (criação de animais)."
+        },
+        {
+            module: "3. Agricultura e Pecuária (Conceitos)",
+            question: "22. Essas atividades compõem qual setor da economia?",
+            options: ["Setor Primário", "Setor Secundário (Indústria)", "Setor Terciário (Serviços)", "Setor de Tecnologia"],
+            correct: 0,
+            explanation: "O setor primário lida diretamente com a extração e produção na natureza."
+        },
+        {
+            module: "3. Agricultura e Pecuária (Conceitos)",
+            question: "23. Além de alimentos, a agropecuária fornece:",
+            options: ["Carros e computadores", "Matérias-primas (tecidos, biocombustíveis, cosméticos)", "Apenas carne", "Serviços de internet"],
+            correct: 1,
+            explanation: "Ex: Algodão para tecidos, soja para biocombustível."
+        },
+        {
+            module: "3. Agricultura e Pecuária (Conceitos)",
+            question: "24. A agricultura é definida como:",
+            options: ["Criação de peixes", "Cultivo do solo para produzir vegetais", "Extração de petróleo", "Fabricação de aço"],
+            correct: 1,
+            explanation: "É a arte de cultivar a terra."
+        },
+        {
+            module: "3. Agricultura e Pecuária (Conceitos)",
+            question: "25. A pecuária é definida como:",
+            options: ["Plantio de soja", "Criação de animais para produção de alimentos e matéria-prima", "Venda de roupas", "Turismo rural"],
+            correct: 1,
+            explanation: "Envolve a criação de gado, aves, suínos, etc."
+        },
+        {
+            module: "3. Agricultura e Pecuária (Conceitos)",
+            question: "26. Onde se localizam as principais áreas agrícolas do mundo?",
+            options: ["Nos polos norte e sul", "Nos desertos", "Em grandes extensões de terra com clima e solo favoráveis", "No topo de montanhas rochosas"],
+            correct: 2,
+            explanation: "Depende de condições naturais (clima/solo) vistas no mapa da pág 347."
+        },
+        {
+            module: "3. Agricultura e Pecuária (Conceitos)",
+            question: "27. O arado foi uma invenção importante para:",
+            options: ["A colheita", "O preparo da terra (revolver o solo)", "A irrigação", "O transporte"],
+            correct: 1,
+            explanation: "O arado serve para revirar a terra e prepará-la para as sementes."
+        },
+        {
+            module: "3. Agricultura e Pecuária (Conceitos)",
+            question: "28. Qual destes é um produto agrícola usado como biocombustível?",
+            options: ["Ferro", "Cana-de-açúcar ou Soja", "Plástico", "Areia"],
+            correct: 1,
+            explanation: "Etanol vem da cana e biodiesel pode vir da soja."
+        },
+        {
+            module: "3. Agricultura e Pecuária (Conceitos)",
+            question: "29. A substituição da tração animal (boi puxando arado) por tratores representa:",
+            options: ["Um retrocesso", "O avanço tecnológico na agricultura", "A agricultura orgânica", "O fim da agricultura"],
+            correct: 1,
+            explanation: "A mecanização aumenta a produtividade."
+        },
+        {
+            module: "3. Agricultura e Pecuária (Conceitos)",
+            question: "30. O que significa 'Atividade Extrativista'?",
+            options: ["Plantar árvores", "Criar gado", "Coletar recursos diretamente da natureza (caça, pesca, frutos nativos)", "Construir casas"],
+            correct: 2,
+            explanation: "Extrativismo é retirar o que a natureza já oferece, diferente de cultivar (agricultura)."
+        },
+
+        // --- MÓDULO 4: Tipos de Agricultura ---
+        {
+            module: "4. Tipos de Agricultura (Tradicional vs Moderna)",
+            question: "31. Qual a principal característica da AGRICULTURA TRADICIONAL?",
+            options: ["Uso de drones e satélites", "Pequenas propriedades, mão de obra familiar e ferramentas simples", "Grandes latifúndios", "Foco total em exportação"],
+            correct: 1,
+            explanation: "É o modelo da agricultura familiar, com pouco recurso tecnológico."
+        },
+        {
+            module: "4. Tipos de Agricultura (Tradicional vs Moderna)",
+            question: "32. O que é POLICULTURA?",
+            options: ["Cultivo de um único produto", "Cultivo de diversos produtos na mesma área", "Criação de peixes", "Cultivo sem água"],
+            correct: 1,
+            explanation: "Poli = Vários. Comum na agricultura tradicional para sustento da família."
+        },
+        {
+            module: "4. Tipos de Agricultura (Tradicional vs Moderna)",
+            question: "33. Qual a principal característica da AGRICULTURA MODERNA (Comercial)?",
+            options: ["Uso de enxadas manuais", "Alta tecnologia, máquinas, sementes selecionadas e alta produtividade", "Produção apenas para comer em casa", "Não usa fertilizantes"],
+            correct: 1,
+            explanation: "Visa o lucro e abastecer o mercado (interno ou externo) com produção em larga escala."
+        },
+        {
+            module: "4. Tipos de Agricultura (Tradicional vs Moderna)",
+            question: "34. O que é MONOCULTURA?",
+            options: ["Cultivo de várias espécies", "Cultivo de uma única espécie vegetal em grandes extensões", "Criação de macacos", "Agricultura sem terra"],
+            correct: 1,
+            explanation: "Mono = Um. Exemplo: imensas plantações apenas de soja."
+        },
+        {
+            module: "4. Tipos de Agricultura (Tradicional vs Moderna)",
+            question: "35. A agricultura tradicional geralmente se destina ao:",
+            options: ["Comércio internacional apenas", "Consumo familiar (subsistência) e comércio local", "Desperdício", "Uso industrial"],
+            correct: 1,
+            explanation: "O foco é alimentar a família e vender o excedente na feira local."
+        },
+        {
+            module: "4. Tipos de Agricultura (Tradicional vs Moderna)",
+            question: "36. Quem produz a maior parte dos alimentos que chegam à mesa dos brasileiros?",
+            options: ["A Agricultura Familiar", "As grandes monoculturas de exportação", "A importação de outros países", "As indústrias químicas"],
+            correct: 0,
+            explanation: "A agricultura familiar é responsável pela maioria dos alimentos básicos (feijão, mandioca, hortaliças)."
+        },
+        {
+            module: "4. Tipos de Agricultura (Tradicional vs Moderna)",
+            question: "37. O que são Cooperativas na agricultura?",
+            options: ["Lojas de tratores", "Organizações de pequenos produtores para fortalecer a venda e compra de insumos", "Bancos", "Tipos de sementes"],
+            correct: 1,
+            explanation: "Pequenos produtores se juntam em cooperativas para conseguir competir com os grandes."
+        },
+        {
+            module: "4. Tipos de Agricultura (Tradicional vs Moderna)",
+            question: "38. Na colheita moderna (como na soja), o trabalho manual é substituído por:",
+            options: ["Animais", "Colheitadeiras mecânicas", "Enxadas", "Queimadas"],
+            correct: 1,
+            explanation: "Máquinas gigantes fazem o trabalho de centenas de homens."
+        },
+        {
+            module: "4. Tipos de Agricultura (Tradicional vs Moderna)",
+            question: "39. Qual tipo de agricultura causa maior impacto visual de 'tapete verde' uniforme?",
+            options: ["Agrofloresta", "Monocultura (Moderna)", "Horta caseira", "Policultura"],
+            correct: 1,
+            explanation: "A monocultura cria paisagens homogêneas (iguais) a perder de vista."
+        },
+        {
+            module: "4. Tipos de Agricultura (Tradicional vs Moderna)",
+            question: "40. A agricultura moderna exige:",
+            options: ["Pouco dinheiro", "Grandes investimentos em tecnologia e insumos", "Apenas chuva", "Mão de obra sem qualificação"],
+            correct: 1,
+            explanation: "É uma atividade cara que depende de capital para comprar máquinas e químicos."
+        },
+
+        // --- MÓDULO 5: Tipos de Pecuária ---
+        {
+            module: "5. Pecuária (Extensiva vs Intensiva)",
+            question: "41. Na Pecuária EXTENSIVA, os animais são criados:",
+            options: ["Presos em gaiolas", "Soltos em grandes áreas de pastagem", "Dentro de galpões", "Em laboratórios"],
+            correct: 1,
+            explanation: "Extensiva vem de 'extensão' de terra. O gado pasta livremente."
+        },
+        {
+            module: "5. Pecuária (Extensiva vs Intensiva)",
+            question: "42. Na Pecuária INTENSIVA, os animais são criados:",
+            options: ["Soltos na floresta", "Confinados (presos) em espaços cercados ou galpões", "Livres no pasto", "Em zoológicos"],
+            correct: 1,
+            explanation: "Intensiva visa intensificar a produção em menor espaço."
+        },
+        {
+            module: "5. Pecuária (Extensiva vs Intensiva)",
+            question: "43. Qual modalidade apresenta MAIOR produtividade e menor tempo de abate?",
+            options: ["Pecuária Extensiva", "Pecuária Intensiva", "Pecuária de Subsistência", "Caça"],
+            correct: 1,
+            explanation: "Na intensiva, controla-se tudo para o animal crescer rápido."
+        },
+        {
+            module: "5. Pecuária (Extensiva vs Intensiva)",
+            question: "44. A alimentação do gado na pecuária EXTENSIVA é baseada em:",
+            options: ["Ração balanceada importada", "Pastagem natural (gramíneas)", "Restos de comida", "Vitaminas"],
+            correct: 1,
+            explanation: "O gado come o capim que cresce no pasto."
+        },
+        {
+            module: "5. Pecuária (Extensiva vs Intensiva)",
+            question: "45. A alimentação na pecuária INTENSIVA é baseada em:",
+            options: ["Capim seco", "Ração balanceada e suplementos", "Frutas frescas", "O que acharem no chão"],
+            correct: 1,
+            explanation: "Recebem comida especial para engordar rapidamente."
+        },
+        {
+            module: "5. Pecuária (Extensiva vs Intensiva)",
+            question: "46. O Brasil destaca-se como um dos maiores produtores mundiais de:",
+            options: ["Carne de canguru", "Carne bovina", "Carne de urso", "Carne de baleia"],
+            correct: 1,
+            explanation: "O Brasil é líder na exportação de carne bovina, muita dela criada em modo extensivo."
+        },
+        {
+            module: "5. Pecuária (Extensiva vs Intensiva)",
+            question: "47. O uso de vacinas e medicamentos é:",
+            options: ["Proibido na pecuária", "Usado para controle de doenças e aumento da produtividade", "Usado apenas em animais de estimação", "Desnecessário"],
+            correct: 1,
+            explanation: "A sanidade animal é essencial, principalmente na intensiva onde doenças se espalham rápido."
+        },
+        {
+            module: "5. Pecuária (Extensiva vs Intensiva)",
+            question: "48. Qual sistema utiliza nível tecnológico mais BAIXO e pouco investimento?",
+            options: ["Intensiva", "Extensiva", "Laboratorial", "Industrial"],
+            correct: 1,
+            explanation: "A pecuária extensiva depende mais da natureza e menos de equipamentos caros."
+        },
+        {
+            module: "5. Pecuária (Extensiva vs Intensiva)",
+            question: "49. A imagem da pág. 352 (cidade de Omro, EUA) mostra vacas em um galpão. Isso é:",
+            options: ["Pecuária Extensiva", "Pecuária Intensiva", "Zoológico", "Feira de animais"],
+            correct: 1,
+            explanation: "Animais confinados em galpão caracterizam o sistema intensivo."
+        },
+        {
+            module: "5. Pecuária (Extensiva vs Intensiva)",
+            question: "50. Além de carne, a pecuária fornece:",
+            options: ["Plástico", "Couro, leite, lã e ovos", "Petróleo", "Madeira"],
+            correct: 1,
+            explanation: "São matérias-primas fundamentais para a indústria."
+        },
+
+        // --- MÓDULO 6: Tecnologia e Impactos (Transgênicos/Agrotóxicos) ---
+        {
+            module: "6. Tecnologia e Impactos Ambientais",
+            question: "51. O que são Plantas TRANSGÊNICAS?",
+            options: ["Plantas de plástico", "Desenvolvidas em laboratório com genes de outras espécies", "Plantas nativas da floresta", "Plantas mortas"],
+            correct: 1,
+            explanation: "Elas têm o DNA modificado para resistir a pragas ou herbicidas."
+        },
+        {
+            module: "6. Tecnologia e Impactos Ambientais",
+            question: "52. Qual o principal argumento de quem é CONTRA os transgênicos?",
+            options: ["São muito baratos", "Podem alterar o equilíbrio ambiental e efeitos na saúde não são 100% conhecidos", "São muito coloridos", "Crescem muito rápido"],
+            correct: 1,
+            explanation: "Ambientalistas temem riscos à biodiversidade e à saúde humana a longo prazo."
+        },
+        {
+            module: "6. Tecnologia e Impactos Ambientais",
+            question: "53. Defensivos Agrícolas (ou Agrotóxicos) servem para:",
+            options: ["Dar sabor à comida", "Proteger as plantas de pragas agrícolas (insetos, fungos)", "Irrigar a plantação", "Pintar as folhas"],
+            correct: 1,
+            explanation: "São venenos usados para matar bichos ou ervas daninhas que atacam a lavoura."
+        },
+        {
+            module: "6. Tecnologia e Impactos Ambientais",
+            question: "54. O uso excessivo de agrotóxicos pode causar:",
+            options: ["Melhoria da saúde", "Contaminação dos alimentos, do solo e da água", "Aumento das florestas", "Surgimento de dinossauros"],
+            correct: 1,
+            explanation: "Resíduos tóxicos podem permanecer na comida e poluir o meio ambiente."
+        },
+        {
+            module: "6. Tecnologia e Impactos Ambientais",
+            question: "55. Segundo a manchete da pág. 352, resíduos de agrotóxicos foram encontrados em:",
+            options: ["100% das pedras", "60% das amostras de alimentos", "Nenhum alimento", "Apenas na carne"],
+            correct: 1,
+            explanation: "Isso mostra que muitos alimentos que chegam à mesa contêm veneno."
+        },
+        {
+            module: "6. Tecnologia e Impactos Ambientais",
+            question: "56. O que é um SISTEMA AGROFLORESTAL?",
+            options: ["Derrubar a floresta para plantar soja", "Cultivo que busca equilíbrio, misturando culturas agrícolas e árvores", "Plantação de eucalipto apenas", "Fábrica de papel"],
+            correct: 1,
+            explanation: "Agrofloresta imita a natureza, misturando árvores e comida, sendo mais sustentável."
+        },
+        {
+            module: "6. Tecnologia e Impactos Ambientais",
+            question: "57. Qual sistema de cultivo causa MENOR impacto ambiental?",
+            options: ["Monocultura de soja", "Agrofloresta (Policultura sustentável)", "Uso intensivo de agrotóxicos", "Queimadas"],
+            correct: 1,
+            explanation: "A agrofloresta preserva a biodiversidade e o solo."
+        },
+        {
+            module: "6. Tecnologia e Impactos Ambientais",
+            question: "58. A agricultura orgânica se caracteriza por:",
+            options: ["Usar muito agrotóxico", "Não utilizar produtos químicos sintéticos (agrotóxicos e fertilizantes químicos)", "Ser feita apenas em laboratório", "Não usar água"],
+            correct: 1,
+            explanation: "O foco é a saúde e a sustentabilidade, sem venenos."
+        },
+        {
+            module: "6. Tecnologia e Impactos Ambientais",
+            question: "59. O aviãozinho na foto da pág. 350 está fazendo o quê?",
+            options: ["Passeando", "Aplicando defensivos agrícolas (pulverização aérea)", "Jogando água", "Tirando fotos"],
+            correct: 1,
+            explanation: "A pulverização aérea espalha agrotóxicos em grandes áreas de monocultura."
+        },
+        {
+            module: "6. Tecnologia e Impactos Ambientais",
+            question: "60. Para reduzir os resíduos de agrotóxicos nos alimentos em casa, devemos:",
+            options: ["Não comer frutas", "Lavar bem os alimentos e, se possível, descascar", "Cozinhar com muito sal", "Comer apenas doces"],
+            correct: 1,
+            explanation: "A higienização ajuda a remover parte dos resíduos superficiais."
+        }
+    ];
+
+    let score = 0;
+    const container = document.getElementById('quiz-container');
+    const scoreDisplay = document.getElementById('score-display');
+    const progressBar = document.getElementById('progress');
+
+    // Conjunto para rastrear questões respondidas (para não pontuar 2x na mesma)
+    let answeredQuestions = new Set();
+
+    function renderQuiz() {
+        let currentModule = "";
+
+        quizData.forEach((item, index) => {
+            if (item.module !== currentModule) {
+                const moduleTitle = document.createElement('div');
+                moduleTitle.className = 'module-title';
+                moduleTitle.innerText = item.module;
+                container.appendChild(moduleTitle);
+                currentModule = item.module;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            
+            const qText = document.createElement('div');
+            qText.className = 'question-text';
+            qText.innerText = item.question;
+            card.appendChild(qText);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options-grid';
+
+            item.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, i, item.correct, item.explanation, card, index);
+                optionsDiv.appendChild(btn);
+            });
+
+            card.appendChild(optionsDiv);
+
+            const explBox = document.createElement('div');
+            explBox.className = 'explanation-box';
+            explBox.innerHTML = `<strong>💡 Explicação:</strong> ${item.explanation}`;
+            card.appendChild(explBox);
+
+            container.appendChild(card);
+        });
+    }
+
+    function checkAnswer(clickedBtn, selectedIndex, correctIndex, explanation, cardElement, questionIndex) {
+        const isFirstTry = !answeredQuestions.has(questionIndex);
+        
+        const buttons = cardElement.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+
+        const explBox = cardElement.querySelector('.explanation-box');
+        explBox.style.display = 'block';
+
+        if (selectedIndex === correctIndex) {
+            clickedBtn.classList.add('correct');
+            if(isFirstTry) score++;
+        } else {
+            clickedBtn.classList.add('wrong');
+            buttons[correctIndex].classList.add('correct');
+        }
+
+        answeredQuestions.add(questionIndex);
+        updateScore();
+    }
+
+    function updateScore() {
+        scoreDisplay.innerText = `Acertos: ${score} / ${quizData.length}`;
+        const percentage = (answeredQuestions.size / quizData.length) * 100;
+        progressBar.style.width = `${percentage}%`;
+        
+        if (answeredQuestions.size === quizData.length) {
+            scoreDisplay.style.backgroundColor = "#27ae60";
+            scoreDisplay.innerHTML += " - Finalizado! 🎉";
+        }
+    }
+
+    renderQuiz();
+</script>
+
+</body>
+</html>
