@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ciências - 6º Ano: Ossos e Músculos</title>
+    <style>
+        :root {
+            --primary: #2980b9; /* Azul Ciência */
+            --secondary: #e67e22; /* Laranja Destaque */
+            --success: #27ae60;
+            --error: #c0392b;
+            --bg: #ecf0f1;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 950px;
+            margin: 0 auto;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), #3498db);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 { margin: 0; font-size: 2em; }
+        h3 { margin-top: 10px; font-weight: normal; opacity: 0.9; }
+
+        .progress-bar {
+            background-color: #bdc3c7;
+            border-radius: 10px;
+            height: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: var(--secondary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .module-title {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            border-left: 5px solid transparent;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .question-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+
+        .option-btn {
+            background: #f8f9fa;
+            border: 2px solid #dfe6e9;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1em;
+            transition: all 0.2s;
+            color: #444;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #eef2f3;
+            border-color: var(--primary);
+        }
+
+        /* Estados de Resposta */
+        .option-btn.correct {
+            background-color: #d4edda !important;
+            border-color: var(--success) !important;
+            color: var(--success);
+            font-weight: bold;
+        }
+        .option-btn.wrong {
+            background-color: #f8d7da !important;
+            border-color: var(--error) !important;
+            color: var(--error);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e8f6f3;
+            border-left: 5px solid var(--success);
+            border-radius: 5px;
+            color: #0e6251;
+            font-size: 0.95em;
+            animation: fadeIn 0.4s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-fixed {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+            font-size: 1.1em;
+            z-index: 1000;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🦴 Avaliação de Ciências 🦾</h1>
+    <h3>Sistema Esquelético e Muscular - 6º Ano</h3>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+    <p>Baseado no livro didático (Páginas 245 a 257)</p>
+</header>
+
+<div id="quiz-container"></div>
+
+<div class="score-fixed" id="score-display">
+    Acertos: 0 / 60
+</div>
+
+<script>
+    const quizData = [
+        
+        // --- MÓDULO 1: Tipos e Funções dos Ossos ---
+        {
+            module: "1. Tipos e Funções dos Ossos",
+            question: "1. Qual é a principal função do sistema esquelético além da sustentação?",
+            options: ["Produção de hormônios", "Proteção de órgãos internos", "Digestão de alimentos", "Respiração celular"],
+            correct: 1,
+            explanation: "Os ossos protegem órgãos vitais, como o crânio protege o cérebro e as costelas protegem coração e pulmões."
+        },
+        {
+            module: "1. Tipos e Funções dos Ossos",
+            question: "2. O fêmur (osso da coxa) é classificado como um osso:",
+            options: ["Curto", "Plano", "Longo", "Irregular"],
+            correct: 2,
+            explanation: "O fêmur é um osso longo, pois seu comprimento é maior que a largura."
+        },
+        {
+            module: "1. Tipos e Funções dos Ossos",
+            question: "3. Onde podemos encontrar ossos CURTOS?",
+            options: ["No crânio", "Nas pernas", "Nos pulsos (carpos) e tornozelos (tarsos)", "Nas costelas"],
+            correct: 2,
+            explanation: "Ossos curtos têm comprimento e largura parecidos, como os carpais (mão) e tarsais (pé)."
+        },
+        {
+            module: "1. Tipos e Funções dos Ossos",
+            question: "4. As vértebras da coluna são exemplos de ossos:",
+            options: ["Planos", "Irregulares", "Longos", "Curtos"],
+            correct: 1,
+            explanation: "As vértebras têm formatos complexos e diferentes, por isso são chamadas de irregulares."
+        },
+        {
+            module: "1. Tipos e Funções dos Ossos",
+            question: "5. Ossos planos (ou chatos) têm função principal de proteção. Um exemplo é:",
+            options: ["Fêmur", "Escápula e Esterno", "Falanges", "Tíbia"],
+            correct: 1,
+            explanation: "A escápula (no ombro) e o esterno (no peito) são finos e planos."
+        },
+        {
+            module: "1. Tipos e Funções dos Ossos",
+            question: "6. Quantos ossos, aproximadamente, tem um adulto?",
+            options: ["300", "150", "206", "500"],
+            correct: 2,
+            explanation: "Um adulto tem cerca de 206 ossos. Um bebê nasce com mais (cerca de 300), mas eles se fundem."
+        },
+        {
+            module: "1. Tipos e Funções dos Ossos",
+            question: "7. Por que um bebê tem mais ossos que um adulto?",
+            options: ["Porque ele é menor.", "Porque alguns ossos se fundem (se unem) com o crescimento.", "Porque os ossos caem igual dentes.", "É mentira, eles têm menos ossos."],
+            correct: 1,
+            explanation: "Ao nascer, muitos ossos estão divididos para facilitar o parto e o crescimento. Depois eles se colam (fundem)."
+        },
+        {
+            module: "1. Tipos e Funções dos Ossos",
+            question: "8. As falanges são os ossos localizados:",
+            options: ["Na cabeça", "No quadril", "Nos dedos das mãos e pés", "No ombro"],
+            correct: 2,
+            explanation: "Falanges são os pequenos ossos que formam nossos dedos."
+        },
+        {
+            module: "1. Tipos e Funções dos Ossos",
+            question: "9. Qual osso protege o encéfalo (cérebro)?",
+            options: ["Costelas", "Crânio", "Bacia", "Vértebra"],
+            correct: 1,
+            explanation: "Os ossos do crânio formam uma caixa protetora para o cérebro."
+        },
+        {
+            module: "1. Tipos e Funções dos Ossos",
+            question: "10. A mandíbula é o único osso móvel da cabeça. Sua função é auxiliar na:",
+            options: ["Respiração", "Visão", "Mastigação", "Audição"],
+            correct: 2,
+            explanation: "A mandíbula se move para permitir que trituremos os alimentos."
+        },
+
+        // --- MÓDULO 2: Estrutura dos Ossos e Alimentação ---
+        {
+            module: "2. Estrutura Óssea e Saúde",
+            question: "11. O que é o periósteo?",
+            options: ["O tutano do osso", "Uma membrana que reveste o osso externamente", "A parte dura do osso", "Uma célula morta"],
+            correct: 1,
+            explanation: "Periósteo é a membrana externa rica em vasos sanguíneos que ajuda na nutrição e crescimento do osso."
+        },
+        {
+            module: "2. Estrutura Óssea e Saúde",
+            question: "12. A medula óssea VERMELHA é responsável por:",
+            options: ["Armazenar gordura", "Produzir células do sangue (como hemácias)", "Produzir cálcio", "Gerar eletricidade"],
+            correct: 1,
+            explanation: "A medula vermelha produz os componentes do sangue: hemácias, leucócitos e plaquetas."
+        },
+        {
+            module: "2. Estrutura Óssea e Saúde",
+            question: "13. A medula óssea AMARELA serve principalmente para:",
+            options: ["Reserva de gordura", "Produzir sangue", "Deixar o osso duro", "Proteger nervos"],
+            correct: 0,
+            explanation: "A medula amarela é rica em tecido adiposo (gordura)."
+        },
+        {
+            module: "2. Estrutura Óssea e Saúde",
+            question: "14. Qual mineral é essencial para dar DUREZA aos ossos?",
+            options: ["Ferro", "Cálcio", "Vitamina C", "Potássio"],
+            correct: 1,
+            explanation: "Sais de cálcio e fosfato conferem a rigidez e resistência aos ossos."
+        },
+        {
+            module: "2. Estrutura Óssea e Saúde",
+            question: "15. Além da dureza, os ossos precisam de certa flexibilidade para não quebrar fácil. Quem dá essa resistência?",
+            options: ["Água", "Colágeno", "Ferro", "Açúcar"],
+            correct: 1,
+            explanation: "As fibras de colágeno garantem resistência contra choques mecânicos e certa flexibilidade."
+        },
+        {
+            module: "2. Estrutura Óssea e Saúde",
+            question: "16. No experimento do osso de galinha no vinagre, o osso ficou mole porque:",
+            options: ["Perdeu o cálcio", "Ganhou gordura", "Perdeu o colágeno", "Quebrou"],
+            correct: 0,
+            explanation: "O ácido do vinagre retira o cálcio, deixando só o colágeno, o que torna o osso flexível (mole)."
+        },
+        {
+            module: "2. Estrutura Óssea e Saúde",
+            question: "17. Quais alimentos são ricos em Cálcio?",
+            options: ["Arroz e feijão", "Leite, queijo, sardinha e brócolis", "Carne vermelha e frango", "Doces e refrigerantes"],
+            correct: 1,
+            explanation: "Laticínios e vegetais verde-escuros são as melhores fontes de cálcio."
+        },
+        {
+            module: "2. Estrutura Óssea e Saúde",
+            question: "18. Como se chama o exame usado para ver fraturas nos ossos?",
+            options: ["Exame de sangue", "Radiografia (Raio X)", "Eletrocardiograma", "Endoscopia"],
+            correct: 1,
+            explanation: "A radiografia permite ver a parte interna e identificar locais fraturados."
+        },
+        {
+            module: "2. Estrutura Óssea e Saúde",
+            question: "19. Quem descobriu o Raio X em 1895?",
+            options: ["Albert Einstein", "Wilhelm Conrad Röntgen", "Isaac Newton", "Santos Dumont"],
+            correct: 1,
+            explanation: "O físico alemão Röntgen descobriu o Raio X (está no texto 'A descoberta da radiografia')."
+        },
+        {
+            module: "2. Estrutura Óssea e Saúde",
+            question: "20. Quando um osso quebra, o corpo produz um novo tecido para 'colar' as partes. Esse tecido forma o:",
+            options: ["Cimento ósseo", "Calo ósseo", "Gesso natural", "Periósteo novo"],
+            correct: 1,
+            explanation: "As células (osteoblastos) produzem matriz óssea formando o 'calo ósseo' que repara a fratura."
+        },
+
+        // --- MÓDULO 3: Divisão do Esqueleto ---
+        {
+            module: "3. Esqueleto Axial e Apendicular",
+            question: "21. O esqueleto humano é dividido em duas grandes partes. São elas:",
+            options: ["Esqueleto de Cima e de Baixo", "Esqueleto Axial e Apendicular", "Esqueleto Mole e Duro", "Esqueleto Interno e Externo"],
+            correct: 1,
+            explanation: "Axial (eixo central) e Apendicular (membros)."
+        },
+        {
+            module: "3. Esqueleto Axial e Apendicular",
+            question: "22. O Esqueleto AXIAL é formado por:",
+            options: ["Braços e pernas", "Crânio, coluna vertebral, costelas e esterno", "Apenas a cabeça", "Mãos e pés"],
+            correct: 1,
+            explanation: "O Axial é o eixo de sustentação do corpo (centro)."
+        },
+        {
+            module: "3. Esqueleto Axial e Apendicular",
+            question: "23. O Esqueleto APENDICULAR serve principalmente para:",
+            options: ["Proteger o cérebro", "Movimentação e locomoção (braços e pernas)", "Mastigação", "Ouvir sons"],
+            correct: 1,
+            explanation: "Apendicular refere-se aos 'apêndices' (membros superiores e inferiores) usados para mover."
+        },
+        {
+            module: "3. Esqueleto Axial e Apendicular",
+            question: "24. A CLAVÍCULA e a ESCÁPULA fazem parte de qual estrutura?",
+            options: ["Crânio", "Cintura Escapular (ombro)", "Bacia", "Pé"],
+            correct: 1,
+            explanation: "Elas fixam o braço ao tronco."
+        },
+        {
+            module: "3. Esqueleto Axial e Apendicular",
+            question: "25. Qual osso protege o coração e os pulmões na frente do peito?",
+            options: ["Esterno", "Fêmur", "Tíbia", "Rádio"],
+            correct: 0,
+            explanation: "O esterno fica no centro da caixa torácica."
+        },
+        {
+            module: "3. Esqueleto Axial e Apendicular",
+            question: "26. Os ossos do QUADRIL protegem quais órgãos?",
+            options: ["Cérebro e olhos", "Coração e pulmão", "Bexiga e órgãos reprodutores", "Estômago e fígado"],
+            correct: 2,
+            explanation: "A bacia (pelve) protege a bexiga, ovários, etc."
+        },
+        {
+            module: "3. Esqueleto Axial e Apendicular",
+            question: "27. O RÁDIO e a ULNA são ossos do:",
+            options: ["Braço (antebraço)", "Perna (canela)", "Pé", "Pescoço"],
+            correct: 0,
+            explanation: "São os dois ossos que formam o antebraço."
+        },
+        {
+            module: "3. Esqueleto Axial e Apendicular",
+            question: "28. A TÍBIA e a FÍBULA são ossos da:",
+            options: ["Mão", "Coxa", "Perna (canela)", "Cabeça"],
+            correct: 2,
+            explanation: "Ficam na parte inferior da perna, abaixo do joelho."
+        },
+        {
+            module: "3. Esqueleto Axial e Apendicular",
+            question: "29. O osso sacro é formado pela:",
+            options: ["Fusão de algumas vértebras", "Quebra do fêmur", "Junção das costelas", "Cartilagem do nariz"],
+            correct: 0,
+            explanation: "O sacro fica no final da coluna e é formado por vértebras fundidas."
+        },
+        {
+            module: "3. Esqueleto Axial e Apendicular",
+            question: "30. O Cóccix fica localizado:",
+            options: ["No pescoço", "No cotovelo", "No final da coluna vertebral", "No nariz"],
+            correct: 2,
+            explanation: "É o ossinho final da coluna."
+        },
+
+        // --- MÓDULO 4: Coluna Vertebral e Postura ---
+        {
+            module: "4. Coluna Vertebral e Postura",
+            question: "31. A coluna vertebral possui 4 curvaturas naturais. São elas:",
+            options: ["Cervical, Torácica, Lombar e Sacral", "Alta, Baixa, Média e Torta", "Direita, Esquerda, Frente e Verso", "Cabeça, Pescoço, Costas e Bumbum"],
+            correct: 0,
+            explanation: "Essas são as regiões anatômicas da coluna mostradas no livro."
+        },
+        {
+            module: "4. Coluna Vertebral e Postura",
+            question: "32. 🚶‍♂️ Sobre mochilas escolares: qual o peso máximo recomendado?",
+            options: ["50% do peso do corpo", "10% da massa corporal da pessoa", "O quanto aguentar carregar", "1kg apenas"],
+            correct: 1,
+            explanation: "Para evitar lesões, a mochila não deve passar de 10% do peso da criança."
+        },
+        {
+            module: "4. Coluna Vertebral e Postura",
+            question: "33. O que é CIFOSE?",
+            options: ["Coluna reta demais", "Desvio lateral da coluna", "Aumento da curvatura torácica (corcunda)", "Dor no pé"],
+            correct: 2,
+            explanation: "A cifose é o arredondamento excessivo das costas (tórax)."
+        },
+        {
+            module: "4. Coluna Vertebral e Postura",
+            question: "34. O que é LORDOSE?",
+            options: ["Aumento da curvatura lombar (depressão na parte inferior das costas)", "Coluna torta para o lado", "Pescoço torto", "Falta de osso"],
+            correct: 0,
+            explanation: "A lordose acentua a curva na região da cintura (lombar)."
+        },
+        {
+            module: "4. Coluna Vertebral e Postura",
+            question: "35. O que é ESCOLIOSE?",
+            options: ["Desvio lateral da coluna (em forma de S ou C)", "Dor de cabeça", "Coluna quebrada", "Ter muitos ossos"],
+            correct: 0,
+            explanation: "Escoliose é quando a coluna entorta para os lados (esquerda ou direita)."
+        },
+        {
+            module: "4. Coluna Vertebral e Postura",
+            question: "36. O que pode causar problemas na coluna?",
+            options: ["Má postura e excesso de peso", "Comer vegetais", "Dormir 8 horas", "Praticar natação"],
+            correct: 0,
+            explanation: "Mochilas pesadas e sentar torto são grandes vilões da coluna."
+        },
+        {
+            module: "4. Coluna Vertebral e Postura",
+            question: "37. Entre as vértebras existem discos de cartilagem. Eles servem para:",
+            options: ["Deixar a coluna dura", "Amortecer impactos e evitar atrito", "Produzir sangue", "Gerar calor"],
+            correct: 1,
+            explanation: "A cartilagem funciona como um 'amortecedor' entre os ossos."
+        },
+        {
+            module: "4. Coluna Vertebral e Postura",
+            question: "38. Os problemas de coluna geralmente iniciam em qual fase?",
+            options: ["Na velhice apenas", "Na infância e adolescência", "Quando bebê", "Nunca iniciam"],
+            correct: 1,
+            explanation: "Muitos desvios começam na fase escolar devido à má postura e peso."
+        },
+        {
+            module: "4. Coluna Vertebral e Postura",
+            question: "39. A medula espinhal passa por dentro de qual estrutura?",
+            options: ["Do fêmur", "Das vértebras (coluna)", "Do crânio", "Da tíbia"],
+            correct: 1,
+            explanation: "As vértebras têm um furo no meio por onde passa a medula espinhal (sistema nervoso)."
+        },
+        {
+            module: "4. Coluna Vertebral e Postura",
+            question: "40. Para manter a saúde da coluna devemos:",
+            options: ["Carregar mochila em um ombro só", "Manter postura adequada ao sentar e andar", "Dormir no sofá torto", "Não fazer exercícios"],
+            correct: 1,
+            explanation: "A postura correta preserva as curvaturas naturais da coluna."
+        },
+
+        // --- MÓDULO 5: Cartilagens e Desenvolvimento ---
+        {
+            module: "5. Cartilagens e Crescimento",
+            question: "41. A maior parte dos ossos do corpo começa sendo formada por:",
+            options: ["Ferro", "Cartilagem (moldes)", "Gordura", "Pele"],
+            correct: 1,
+            explanation: "No embrião, o esqueleto é cartilaginoso e vai ossificando (endurecendo) com o tempo."
+        },
+        {
+            module: "5. Cartilagens e Crescimento",
+            question: "42. Onde encontramos cartilagem no corpo humano adulto?",
+            options: ["Apenas nos dentes", "Orelhas, nariz, articulações e traqueia", "No cabelo", "Nas unhas"],
+            correct: 1,
+            explanation: "A cartilagem sustenta tecidos moles como orelha e nariz."
+        },
+        {
+            module: "5. Cartilagens e Crescimento",
+            question: "43. As 'moleiras' na cabeça do recém-nascido servem para:",
+            options: ["Enfeitar", "Permitir o crescimento do cérebro e facilitar o parto", "Ventilar a cabeça", "Não servem para nada"],
+            correct: 1,
+            explanation: "São espaços membranosos que permitem que os ossos se mexam no parto e o cérebro cresça."
+        },
+        {
+            module: "5. Cartilagens e Crescimento",
+            question: "44. Qual proteína forma a cartilagem?",
+            options: ["Colágeno", "Hemoglobina", "Insulina", "Queratina"],
+            correct: 0,
+            explanation: "O colágeno confere flexibilidade à cartilagem."
+        },
+        {
+            module: "5. Cartilagens e Crescimento",
+            question: "45. Na imagem do desenvolvimento do crânio, os espaços entre os ossos do bebê são substituídos por:",
+            options: ["Água", "Tecido ósseo (osso)", "Músculo", "Cabelo"],
+            correct: 1,
+            explanation: "Com o tempo, as moleiras se fecham e viram osso duro."
+        },
+        {
+            module: "5. Cartilagens e Crescimento",
+            question: "46. A cartilagem nas articulações (como joelho) serve como:",
+            options: ["Lubrificante e proteção contra desgaste", "Cola", "Motor", "Freio"],
+            correct: 0,
+            explanation: "Ela evita que osso raspe em osso."
+        },
+        {
+            module: "5. Cartilagens e Crescimento",
+            question: "47. O que é 'Ossificação'?",
+            options: ["Quebrar o osso", "Processo de formação e endurecimento dos ossos", "Comer osso", "Perder cálcio"],
+            correct: 1,
+            explanation: "É o processo biológico onde a cartilagem vira osso ou o osso se regenera."
+        },
+        {
+            module: "5. Cartilagens e Crescimento",
+            question: "48. As costelas são ligadas ao osso esterno por cartilagem. Isso ajuda na:",
+            options: ["Digestão", "Respiração (movimento do tórax)", "Fala", "Visão"],
+            correct: 1,
+            explanation: "Essa flexibilidade permite que o peito encha de ar."
+        },
+        {
+            module: "5. Cartilagens e Crescimento",
+            question: "49. O nariz e a orelha não aparecem nos esqueletos antigos (caveiras) porque:",
+            options: ["Caem antes de morrer", "São feitos de cartilagem e se decompõem rápido", "São feitos de osso duro", "Eram removidos"],
+            correct: 1,
+            explanation: "A cartilagem é um tecido mole que não se preserva como o osso."
+        },
+        {
+            module: "5. Cartilagens e Crescimento",
+            question: "50. Osteoblastos são:",
+            options: ["Ossos quebrados", "Células responsáveis por produzir matriz óssea", "Vitaminas", "Músculos"],
+            correct: 1,
+            explanation: "São as células construtoras do osso."
+        },
+
+        // --- MÓDULO 6: Sistema Muscular ---
+        {
+            module: "6. Músculos e Movimento",
+            question: "51. Qual tecido muscular compõe o CORAÇÃO?",
+            options: ["Estriado Esquelético", "Liso", "Estriado Cardíaco", "Adiposo"],
+            correct: 2,
+            explanation: "O coração é feito de músculo estriado cardíaco (contração rápida e involuntária)."
+        },
+        {
+            module: "6. Músculos e Movimento",
+            question: "52. O tecido muscular LISO está presente em:",
+            options: ["Bíceps e Tríceps", "Órgãos internos (estômago, intestinos, vasos sanguíneos)", "Ossos", "Coração"],
+            correct: 1,
+            explanation: "Músculos lisos têm contração lenta e involuntária, movendo comida e sangue."
+        },
+        {
+            module: "6. Músculos e Movimento",
+            question: "53. Os músculos associados aos ossos, que movemos por vontade própria, são do tipo:",
+            options: ["Estriado Esquelético", "Liso", "Cardíaco", "Nervoso"],
+            correct: 0,
+            explanation: "São os músculos que formam a 'carne' do corpo e permitem movimentos voluntários."
+        },
+        {
+            module: "6. Músculos e Movimento",
+            question: "54. O que são TENDÕES?",
+            options: ["Ossos pequenos", "Estruturas que ligam os músculos aos ossos", "Nervos", "Gordura"],
+            correct: 1,
+            explanation: "Tendões são cabos resistentes que prendem o músculo no osso para puxá-lo."
+        },
+        {
+            module: "6. Músculos e Movimento",
+            question: "55. Qual músculo é responsável por levantar o braço lateralmente (ombro)?",
+            options: ["Glúteo", "Deltoide", "Abdominal", "Gastrocnêmio"],
+            correct: 1,
+            explanation: "O Deltoide é o músculo do ombro."
+        },
+        {
+            module: "6. Músculos e Movimento",
+            question: "56. O músculo 'Gastrocnêmio' é popularmente conhecido como:",
+            options: ["Batata da perna (panturrilha)", "Coxa", "Bumbum", "Braço"],
+            correct: 0,
+            explanation: "Ele fica na parte de trás da perna e ajuda a ficar na ponta do pé."
+        },
+        {
+            module: "6. Músculos e Movimento",
+            question: "57. O músculo Peitoral Maior serve para:",
+            options: ["Chutar", "Aproximar o braço do centro do corpo", "Mastigar", "Piscar"],
+            correct: 1,
+            explanation: "Ele puxa o braço para frente e para o meio."
+        },
+        {
+            module: "6. Músculos e Movimento",
+            question: "58. Por que devemos nos ALONGAR?",
+            options: ["Para ficar mais baixo", "Para reduzir tensão, evitar lesões e aumentar flexibilidade", "Para dormir", "Para engordar"],
+            correct: 1,
+            explanation: "O alongamento prepara o músculo, melhora circulação e evita dores."
+        },
+        {
+            module: "6. Músculos e Movimento",
+            question: "59. O encurtamento dos músculos pode causar:",
+            options: ["Mais inteligência", "Dores, deformações e compressão osso contra osso", "Super força", "Fome"],
+            correct: 1,
+            explanation: "Músculos encurtados puxam os ossos de forma errada, causando problemas posturais."
+        },
+        {
+            module: "6. Músculos e Movimento",
+            question: "60. O músculo Trapézio fica localizado:",
+            options: ["Na barriga", "Na região superior das costas e pescoço", "Na perna", "No pé"],
+            correct: 1,
+            explanation: "Ele ajuda a mover os ombros e a cabeça."
+        }
+    ];
+
+    let score = 0;
+    const container = document.getElementById('quiz-container');
+    const scoreDisplay = document.getElementById('score-display');
+    const progressBar = document.getElementById('progress');
+
+    function renderQuiz() {
+        let currentModule = "";
+
+        quizData.forEach((item, index) => {
+            // Criar separador de módulo
+            if (item.module !== currentModule) {
+                const moduleTitle = document.createElement('div');
+                moduleTitle.className = 'module-title';
+                moduleTitle.innerText = item.module;
+                container.appendChild(moduleTitle);
+                currentModule = item.module;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            
+            const qText = document.createElement('div');
+            qText.className = 'question-text';
+            qText.innerText = item.question;
+            card.appendChild(qText);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options-grid';
+
+            item.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, i, item.correct, item.explanation, card, index);
+                optionsDiv.appendChild(btn);
+            });
+
+            card.appendChild(optionsDiv);
+
+            const explBox = document.createElement('div');
+            explBox.className = 'explanation-box';
+            explBox.innerHTML = `<strong>💡 Explicação:</strong> ${item.explanation}`;
+            card.appendChild(explBox);
+
+            container.appendChild(card);
+        });
+    }
+
+    // Array para controlar quais questões já foram respondidas
+    let answeredQuestions = new Set();
+
+    function checkAnswer(clickedBtn, selectedIndex, correctIndex, explanation, cardElement, questionIndex) {
+        // Evita responder a mesma duas vezes no contagem de pontos
+        const isFirstTry = !answeredQuestions.has(questionIndex);
+        
+        const buttons = cardElement.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+
+        const explBox = cardElement.querySelector('.explanation-box');
+        explBox.style.display = 'block';
+
+        if (selectedIndex === correctIndex) {
+            clickedBtn.classList.add('correct');
+            if(isFirstTry) score++;
+        } else {
+            clickedBtn.classList.add('wrong');
+            buttons[correctIndex].classList.add('correct');
+        }
+
+        answeredQuestions.add(questionIndex);
+        updateScore();
+    }
+
+    function updateScore() {
+        scoreDisplay.innerText = `Acertos: ${score} / ${quizData.length}`;
+        const percentage = (answeredQuestions.size / quizData.length) * 100;
+        progressBar.style.width = `${percentage}%`;
+        
+        if (answeredQuestions.size === quizData.length) {
+            scoreDisplay.style.backgroundColor = "#27ae60"; // Fica verde ao terminar
+            scoreDisplay.innerHTML += " - Finalizado! 🎉";
+        }
+    }
+
+    renderQuiz();
+</script>
+
+</body>
+</html>
